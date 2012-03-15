@@ -236,6 +236,7 @@ class Main:
         self.EXTERNALCALLSTATUS = xbmc.getInfoLabel( self.EXTERNALCALL )
         log( 'external call is set to ' + xbmc.getInfoLabel( self.EXTERNALCALL ) )
         self.NAME = ''
+        self.TRACK = ''
         self.LocalImagesFound = False
         self.CachedImagesFound = False
         self.ImageDownloaded = False
@@ -264,6 +265,7 @@ class Main:
         self.FirstImage = True
         min_refresh = 9.9
         self.NAME = self._get_current_artist()
+        log( 'track ' + self.TRACK )
         if len(self.NAME) == 0:
             log('no artist name provided')
             return
@@ -397,8 +399,10 @@ class Main:
     def _get_current_artist( self ):
         if( xbmc.Player().isPlayingAudio() == True ):
             artist = xbmc.Player().getMusicInfoTag().getArtist()
+            self.TRACK = xbmc.Player().getMusicInfoTag().getTitle()
             if( artist == '' ):
                 artist = xbmc.Player().getMusicInfoTag().getTitle()
+                self.TRACK = artist[(artist.find('-'))+2:len(artist)]
                 return artist[0:(artist.find('-'))-1]
             else:
                 return artist
@@ -495,6 +499,8 @@ class Main:
         self.similar = self._get_data(site, 'similar')
         self.url = self.LastfmURL + '&method=artist.getTopAlbums&artist=' + self.NAME.replace('&','%26').replace(' ','+')
         self.albums = self._get_data(site, 'albums')
+        self.url = self.LastfmURL + '&method=track.getinfo&artist=' + self.NAME.replace('&','%26').replace(' ','+') + '&track='+ self.TRACK.replace('&','%26').replace(' ','+')
+        self.currentalbum = self._get_data(site, 'currentalbum')
         self._set_properties()
 
 
@@ -513,6 +519,8 @@ class Main:
             filename = os.path.join( self.CacheDir, 'artistsimilar.nfo')
         elif item == "albums":
             filename = os.path.join( self.CacheDir, 'artistsalbums.nfo')
+        elif item == "currentalbum":
+            filename = os.path.join( self.CacheDir, 'artistsalbum.nfo')
         if xbmcvfs.exists( filename ):
             if time.time() - os.path.getmtime(filename) < 1209600:
                 log('cached artist %s info found' % item)
@@ -582,6 +590,21 @@ class Main:
                         if not image:
                             image = ''
                         data.append( ( name , image ) )
+        elif item == "currentalbum":
+            for element in xmldata.getiterator():
+                if element.tag == "title":
+                    if match:
+                        match = ''
+                    else:
+                        name = element.text
+                        name.encode('ascii', 'ignore')
+                        match = 'true'
+                elif element.tag == "image":
+                    if element.attrib.get('size') == "extralarge":
+                        image = element.text
+                        if not image:
+                            image = ''
+                        data.append( ( name , image ) )
         if data == '':
             log('no %s found on %s' % (item, site))
         return data
@@ -589,12 +612,17 @@ class Main:
 
     def _set_properties( self ):
         self.WINDOW.setProperty("ArtistSlideshow.ArtistBiography", self.biography)
+        #self.WINDOW.setProperty("ArtistSlideshow.CurrentAlbumName", self.currentalbum[0,0])
+        #self.WINDOW.setProperty("ArtistSlideshow.CurrentAlbumThumb", self.currentalbum[0,1])
         for count, item in enumerate( self.similar ):
             self.WINDOW.setProperty("ArtistSlideshow.%d.SimilarName" % ( count + 1 ), item[0])
             self.WINDOW.setProperty("ArtistSlideshow.%d.SimilarThumb" % ( count + 1 ), item[1])
         for count, item in enumerate( self.albums ):
             self.WINDOW.setProperty("ArtistSlideshow.%d.AlbumName" % ( count + 1 ), item[0])
             self.WINDOW.setProperty("ArtistSlideshow.%d.AlbumThumb" % ( count + 1 ), item[1])
+        for count, item in enumerate( self.currentalbum ):
+            self.WINDOW.setProperty("ArtistSlideshow.%d.currentAlbumName" % ( count + 1 ), item[0])
+            self.WINDOW.setProperty("ArtistSlideshow.%d.currentAlbumThumb" % ( count + 1 ), item[1])
 
 
     def _clear_properties( self ):
@@ -606,6 +634,8 @@ class Main:
             self.WINDOW.clearProperty( "ArtistSlideshow.%d.SimilarThumb" % ( count ) )
             self.WINDOW.clearProperty( "ArtistSlideshow.%d.AlbumName" % ( count ) )
             self.WINDOW.clearProperty( "ArtistSlideshow.%d.AlbumThumb" % ( count ) )
+            self.WINDOW.clearProperty( "ArtistSlideshow.%d.currentAlbumName" % ( count ) )
+            self.WINDOW.clearProperty( "ArtistSlideshow.%d.currentAlbumThumb" % ( count ) )
 
 
 if ( __name__ == "__main__" ):
