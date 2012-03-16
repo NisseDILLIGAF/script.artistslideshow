@@ -413,6 +413,7 @@ class Main:
 
 
     def _playback_stopped_or_changed( self ):
+        xbmcvfs.delete(os.path.join( self.CacheDir, 'artistsalbum.nfo'))
         if (self.NAME != self._get_current_artist() or self.EXTERNALCALLSTATUS != xbmc.getInfoLabel(self.EXTERNALCALL) ):
             return True
         else:
