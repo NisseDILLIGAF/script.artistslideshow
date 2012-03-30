@@ -586,7 +586,7 @@ class Main:
                         name.encode('ascii', 'ignore')
                         match = 'true'
                 elif element.tag == "image":
-                    if element.attrib.get('size') == "extralarge":
+                    if element.attrib.get('size') == "extralarge" and not "default_album" in element.text:
                         image = element.text
                         if not image:
                             image = ''
@@ -601,7 +601,7 @@ class Main:
                         name.encode('ascii', 'ignore')
                         match = 'true'
                 elif element.tag == "image":
-                    if element.attrib.get('size') == "extralarge":
+                    if element.attrib.get('size') == "extralarge" and not "default_album" in element.text:
                         image = element.text
                         if not image:
                             image = ''
