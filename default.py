@@ -528,7 +528,7 @@ class Main:
                 ForceUpdate = False
             else:
                 log('outdated cached artist %s info found' % item)
-        elif ForceUpdate:
+        if ForceUpdate:
             log('downloading artist %s info %s' % (item, site))
             try:
                 urllib.urlretrieve( self.url, filename )
@@ -613,8 +613,8 @@ class Main:
 
     def _set_properties( self ):
         self.WINDOW.setProperty("ArtistSlideshow.ArtistBiography", self.biography)
-        #self.WINDOW.setProperty("ArtistSlideshow.CurrentAlbumName", self.currentalbum[0,0])
-        #self.WINDOW.setProperty("ArtistSlideshow.CurrentAlbumThumb", self.currentalbum[0,1])
+        #self.WINDOW.setProperty("ArtistSlideshow.CurrentAlbumName", self.currentalbum[0][0])
+        #self.WINDOW.setProperty("ArtistSlideshow.CurrentAlbumThumb", self.currentalbum[0][1])
         for count, item in enumerate( self.similar ):
             self.WINDOW.setProperty("ArtistSlideshow.%d.SimilarName" % ( count + 1 ), item[0])
             self.WINDOW.setProperty("ArtistSlideshow.%d.SimilarThumb" % ( count + 1 ), item[1])
