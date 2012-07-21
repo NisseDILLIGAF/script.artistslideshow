@@ -1,3 +1,20 @@
+v.1.3.5 (unreleased)
+- added ability to display artwork from multiple artists simultaneously
+
+v1.3.4 (unreleased)
+- added option for a folder name other than extrafanart
+
+v1.3.3 (unreleased)
+- added notification when downloading first image for an artist
+- added option for user to set image to use during download of first image
+
+v1.3.2
+- added language files for Portuguese-Brazil (thanks to Wanilton)
+
+v1.3.1
+- changes to support for internet streams
+- fixed bug that caused artist .nfo files to never be updated
+
 v1.3.0
 - updated refresh during download logic to make it more aesthetically pleasing
 - refresh during downloads is now the default (and non-optional) behavior
